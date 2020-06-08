@@ -1,11 +1,11 @@
 package com.skowronsky.snkrs.server;
 
+import com.skowronsky.snkrs.DataServer;
 import com.skowronsky.snkrs.data.Storage;
 import com.skowronsky.snkrs.model.*;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +18,14 @@ public class Capitalizer implements Runnable {
     public Capitalizer(Socket socket, Storage storage) {
         this.socket = socket;
         this.storage = storage;
+
     }
 
     @Override
     public void run() {
         System.out.println("Connected: " + socket);
+        DataServer.LOGGER.info("Connected: " + socket);
+
         try {
             var in = new Scanner(socket.getInputStream());
             var objOut = new ObjectOutputStream(socket.getOutputStream());
@@ -32,24 +35,26 @@ public class Capitalizer implements Runnable {
             do{
                 message = in.nextLine();
 
-                System.out.println("conne");
-
                 executeCommadn(message, objOut, in, storage);
                 System.out.println(message);
+                DataServer.LOGGER.info(message);
             }while (!message.equals("QQQ"));
 
             in.close();
             objOut.close();
         } catch (Exception e) {
             System.out.println("I/O Error:" + socket);
+            DataServer.LOGGER.info("I/O Error:" + socket);
         } finally {
             try {
                 socket.close();
 
             } catch (IOException e) {
                 System.out.println("Close connection err: "+e);
+                DataServer.LOGGER.info("Close connection err: "+e);
             }
             System.out.println("Closed: " + socket);
+            DataServer.LOGGER.info("Closed: " + socket);
         }
     }
 
@@ -81,7 +86,7 @@ public class Capitalizer implements Runnable {
                 password = input.nextLine();
                 user = storage.getUser(login,password);
                 sendUserInfo(user,objOut);
-                storage.printFavorite();
+//                storage.printFavorite();
                 break;
             case "shoes":
                 sendShoes(storage.getShoesList(),objOut);
@@ -120,7 +125,7 @@ public class Capitalizer implements Runnable {
                     favoriteShoesList.add(new FavoriteShoes(idShoes,id_base,size));
                 }
                 storage.updateFavorites(login,favoriteShoesList);
-                storage.printFavorite();
+//                storage.printFavorite();
                 break;
 
             case "base":

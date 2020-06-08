@@ -1,5 +1,6 @@
 package com.skowronsky.snkrs.data;
 
+import com.skowronsky.snkrs.DataServer;
 import com.skowronsky.snkrs.db.DataBase;
 import com.skowronsky.snkrs.model.*;
 
@@ -75,6 +76,7 @@ public class Storage {
                     dataBase.updateUser(email,name,password);
                 } catch (SQLException throwables) {
                     System.out.println("Error update db");
+                    DataServer.LOGGER.info("Error update db");
                 }
             }
         }
@@ -95,6 +97,7 @@ public class Storage {
             for (var item :
                     userList) {
                 System.out.println(item.getEmail());
+                DataServer.LOGGER.info(item.getEmail());
             }
         } catch (SQLException throwables) {
         }
